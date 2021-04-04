@@ -1,12 +1,9 @@
 import cv2
-import os
 import sys
 import numpy
 import matplotlib.pyplot as plt
-from enhance import image_enhance
+#from enhance import image_enhance
 from skimage.morphology import skeletonize, thin
-
-os.chdir("/app/")
 
 def removedot(invertThin):
     temp0 = numpy.array(invertThin[:])
@@ -15,7 +12,7 @@ def removedot(invertThin):
     temp2 = numpy.array(temp1)
     temp3 = numpy.array(temp2)
 
-    enhanced_img = numpy.array(temp0)
+    #enhanced_img = numpy.array(temp0)
     filter0 = numpy.zeros((10,10))
     W,H = temp0.shape[:2]
     filtersize = 6
@@ -42,7 +39,7 @@ def removedot(invertThin):
 def get_descriptors(img):
 	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 	img = clahe.apply(img)
-	img = image_enhance.image_enhance(img)
+	#img = image_enhance.image_enhance(img)
 	img = numpy.array(img, dtype=numpy.uint8)
 	# Threshold
 	ret, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
@@ -82,27 +79,28 @@ def main():
 	# Matching between descriptors
 	bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 	matches = sorted(bf.match(des1, des2), key= lambda match:match.distance)
-	# Plot keypoints
-	img4 = cv2.drawKeypoints(img1, kp1, outImage=None)
-	img5 = cv2.drawKeypoints(img2, kp2, outImage=None)
-	f, axarr = plt.subplots(1,2)
-	axarr[0].imshow(img4)
-	axarr[1].imshow(img5)
-	plt.show()
-	# Plot matches
-	img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches, flags=2, outImg=None)
-	plt.imshow(img3)
-	plt.show()
+	## Plot keypoints
+	#img4 = cv2.drawKeypoints(img1, kp1, outImage=None)
+	#img5 = cv2.drawKeypoints(img2, kp2, outImage=None)
+	#f, axarr = plt.subplots(1,2)
+	#axarr[0].imshow(img4)
+	#axarr[1].imshow(img5)
+	#plt.show()
+	## Plot matches
+	#img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches, flags=2, outImg=None)
+	#plt.imshow(img3)
+	#plt.show()
 
 	# Calculate score
 	score = 0;
 	for match in matches:
 		score += match.distance
 	score_threshold = 33
-	if score/len(matches) < score_threshold:
-		print("Fingerprint matches.")
+	result = score/len(matches)
+	if  result < score_threshold:
+		print("Fingerprint matches." + str(result))
 	else:
-		print("Fingerprint does not match.")
+		print("Fingerprint does not match." + str(result))
 
 
 
